@@ -18,8 +18,6 @@ unsigned int HashMapConcurrente::hashIndex(std::string clave) {
 }
 
 void HashMapConcurrente::incrementar(std::string clave) {
-
-
     ListaAtomica<hashMapPair> *lista  = tabla[hashIndex(clave)];
     ListaAtomica<hashMapPair>::Iterador it = lista->crearIt();
     
@@ -36,13 +34,12 @@ void HashMapConcurrente::incrementar(std::string clave) {
     }
     
     pthread_mutex_unlock(&lock[hashIndex(clave)]);
-
 }
 
 std::vector<std::string> HashMapConcurrente::claves() {
     std::vector<std::string> res;
 
-    for(unsigned int i = 0; i < HashMapConcurrente::cantLetras ; i++){
+    for(unsigned int i = 0; i < HashMapConcurrente::cantLetras ; i++) {
         ListaAtomica<hashMapPair>::Iterador it = tabla[i]->crearIt();
         
         while(it.haySiguiente()){
@@ -52,22 +49,17 @@ std::vector<std::string> HashMapConcurrente::claves() {
     }
 
     return res;
-
 }
 
 unsigned int HashMapConcurrente::valor(std::string clave) {
-
     ListaAtomica<hashMapPair>::Iterador it = tabla[hashIndex(clave)]->crearIt();
     
-    while(it.haySiguiente() && it.siguiente().first != clave){
+    while(it.haySiguiente() && it.siguiente().first != clave) {
         it.avanzar();
     }
 
-    if(!it.haySiguiente()){
-        return 0;
-    } else {
-        return it.siguiente().second;
-    }
+    if(!it.haySiguiente()) return 0;
+    else return it.siguiente().second;
 }
 
 hashMapPair HashMapConcurrente::maximo() {
@@ -95,5 +87,3 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cantThreads) {
 }
 
 #endif
-
-
