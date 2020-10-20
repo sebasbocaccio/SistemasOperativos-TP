@@ -22,11 +22,11 @@ void HashMapConcurrente::incrementar(std::string clave) {
     ListaAtomica<hashMapPair>::Iterador it = lista->crearIt();
     
     pthread_mutex_lock(&lock[hashIndex(clave)]);
-    while(it.haySiguiente() && it.siguiente().first != clave){
+    while(it.haySiguiente() && it.siguiente().first != clave) {
         it.avanzar();
     }
 
-    if(!it.haySiguiente()){
+    if(!it.haySiguiente()) {
         hashMapPair nuestraTupla = hashMapPair(clave, 1);
         lista->insertar(nuestraTupla);
     } else {
