@@ -10,23 +10,31 @@
 typedef std::pair<std::string, unsigned int> hashMapPair;
 
 class HashMapConcurrente {
- public:
-    static const unsigned int cantLetras = 26;
+public:
+   static const unsigned int cantLetras = 26;
 
-    HashMapConcurrente();
+   HashMapConcurrente();
 
-    void incrementar(std::string clave);
-    std::vector<std::string> claves();
-    unsigned int valor(std::string clave);
+   void incrementar(std::string clave);
+   std::vector<std::string> claves();
+   unsigned int valor(std::string clave);
 
-    hashMapPair maximo();
-    hashMapPair maximoParalelo(unsigned int cantThreads);
+   hashMapPair maximo();
+   hashMapPair maximoParalelo(unsigned int cantThreads);
 
- private:
-    ListaAtomica<hashMapPair> *tabla[HashMapConcurrente::cantLetras];
+private:
+   ListaAtomica<hashMapPair> *tabla[HashMapConcurrente::cantLetras];
 
-    pthread_mutex_t lock[HashMapConcurrente::cantLetras];
-    static unsigned int hashIndex(std::string clave);
+   pthread_mutex_t lock[HashMapConcurrente::cantLetras];
+
+   uint readers, writers;
+   pthread_mutex_t mutex_readers, mutex_writers, room_empty, turnstile;
+
+   pthread_mutex_t turnstiles_filas[HashMapConcurrente::cantLetras];
+   pthread_mutex_t mutexes_filas[HashMapConcurrente::cantLetras];
+   uint readers_filas[HashMapConcurrente::cantLetras];
+
+   static unsigned int hashIndex(std::string clave);
 };
 
 #endif  /* HMC_HPP */
