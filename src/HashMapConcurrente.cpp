@@ -143,9 +143,19 @@ unsigned int HashMapConcurrente::valor(std::string clave) {
     pthread_mutex_unlock(mutexes_filas + hashIndex(clave));
 }
 
-hashMapPair HashMapConcurrente::maximo() {
+hashMapPair HashMapConcurrente::maximo() {   
     hashMapPair *max = new hashMapPair();
     max->second = 0;
+
+    pthread_mutex_lock(&mutex_readers);
+        readers += 1;
+        if (readers == 1) {
+            pthread_mutex_lock(&turnstile);
+            pthread_mutex_lock(&room_empty);
+        }
+    pthread_mutex_unlock(&mutex_readers);
+
+    /// Inicio sección crítica
 
     for (unsigned int index = 0; index < HashMapConcurrente::cantLetras; index++) {
         for (
@@ -160,11 +170,70 @@ hashMapPair HashMapConcurrente::maximo() {
         }
     }
 
+    /// Fin sección crítica
+
+    pthread_mutex_lock(&mutex_readers);
+        readers -= 1;
+        if (readers == 0) {
+            pthread_mutex_unlock(&turnstile);
+            pthread_mutex_unlock(&room_empty);
+        }
+    pthread_mutex_unlock(&mutex_readers);
+
     return *max;
 }
 
 hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cantThreads) {
-    // Completar (Ejercicio 3)
+    pthread_t tid[cantThreads];
+    std::atomic<int> table_index(0);
+    hashMapPair max("", 0);
+    pthread_mutex_t mutex_max;
+
+    pthread_mutex_init(&mutex_max, NULL);
+
+    max_args_t args = {
+        table_index,
+        max,
+        mutex_max,    
+    };
+        
+    // Inicializamos los threads
+    for (unsigned int i = 0; i < cantThreads; ++i) {
+        pthread_create(tid + i, NULL, maximoThreads, &args);
+    }
+
+    // Esperamos a que terminen todos
+    for (unsigned int i = 0; i < cantThreads; ++i) {
+        pthread_join(tid[i], NULL);
+    }
+
+    return args.max;
 }
+
+void* HashMapConcurrente::maximoThreads(void* args) {
+    max_args_t max_args = *((max_args_t*) args);
+    hashMapPair local_max = hashMapPair("", 0);
+
+    unsigned int index;
+    
+    while ((index = max_args.table_index.fetch_add(1)) < HashMapConcurrente::cantLetras) {
+        ListaAtomica<hashMapPair>::Iterador it = tabla[index]->crearIt();
+
+        while (it.haySiguiente()) {
+            if (it.siguiente().second > local_max.second) {
+                local_max.first = it.siguiente().first;
+                local_max.second = it.siguiente().second;
+            } 
+        }
+
+        pthread_mutex_lock(&max_args.mutex_max);
+            if (local_max.second > max_args.max.second) {
+                max_args.max = local_max;
+            }
+        pthread_mutex_unlock(&max_args.mutex_max);
+    }
+
+    return nullptr;
+}  
 
 #endif

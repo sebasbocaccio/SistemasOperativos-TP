@@ -35,6 +35,15 @@ private:
    uint readers_filas[HashMapConcurrente::cantLetras];
 
    static unsigned int hashIndex(std::string clave);
+
+   void* maximoThreads(void* args);
+
+   typedef struct s_max_args {
+      std::atomic<int> &table_index;
+      hashMapPair &max;
+      pthread_mutex_t &mutex_max;
+   } max_args_t;
+
 };
 
 #endif  /* HMC_HPP */
