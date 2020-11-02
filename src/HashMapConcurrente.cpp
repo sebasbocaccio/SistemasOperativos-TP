@@ -32,10 +32,12 @@ unsigned int HashMapConcurrente::hashIndex(std::string clave) {
 }
 
 void HashMapConcurrente::incrementar(std::string clave) {
+    pthread_mutex_lock(&turnstile);
+    pthread_mutex_unlock(&turnstile);
+
     pthread_mutex_lock(&mutex_writers);
         writers += 1;
         if (writers == 1) {
-            pthread_mutex_lock(&turnstile);
             pthread_mutex_lock(&room_empty);
         }
     pthread_mutex_unlock(&mutex_writers);
@@ -45,6 +47,8 @@ void HashMapConcurrente::incrementar(std::string clave) {
     ListaAtomica<hashMapPair>::Iterador it = tabla[hashIndex(clave)]->crearIt();
     
     pthread_mutex_lock(turnstiles_filas + hashIndex(clave));
+    pthread_mutex_unlock(turnstiles_filas + hashIndex(clave));
+
     pthread_mutex_lock(lock + hashIndex(clave));
 
         while(it.haySiguiente() && it.siguiente().first != clave) {
@@ -58,7 +62,6 @@ void HashMapConcurrente::incrementar(std::string clave) {
             it.siguiente().second++;
         }
     
-    pthread_mutex_unlock(turnstiles_filas + hashIndex(clave));
     pthread_mutex_unlock(lock + hashIndex(clave));
 
     /// Fin sección crítica
@@ -66,7 +69,6 @@ void HashMapConcurrente::incrementar(std::string clave) {
     pthread_mutex_lock(&mutex_writers);
         writers -= 1;
         if (writers == 0) {
-            pthread_mutex_unlock(&turnstile);
             pthread_mutex_unlock(&room_empty);
         }
     pthread_mutex_unlock(&mutex_writers);
@@ -75,12 +77,10 @@ void HashMapConcurrente::incrementar(std::string clave) {
 std::vector<std::string> HashMapConcurrente::claves() {
     std::vector<std::string> res;
 
-    pthread_mutex_lock(&turnstile);
-    pthread_mutex_unlock(&turnstile);
-
     pthread_mutex_lock(&mutex_readers);
         readers += 1;
         if (readers == 1) {
+            pthread_mutex_lock(&turnstile);
             pthread_mutex_lock(&room_empty);
         }
     pthread_mutex_unlock(&mutex_readers);
@@ -101,6 +101,7 @@ std::vector<std::string> HashMapConcurrente::claves() {
     pthread_mutex_lock(&mutex_readers);
         readers -= 1;
         if (readers == 0) {
+            pthread_mutex_unlock(&turnstile);
             pthread_mutex_unlock(&room_empty);
         }
     pthread_mutex_unlock(&mutex_readers);
@@ -109,12 +110,10 @@ std::vector<std::string> HashMapConcurrente::claves() {
 }
 
 unsigned int HashMapConcurrente::valor(std::string clave) {
-    pthread_mutex_lock(turnstiles_filas + hashIndex(clave));
-    pthread_mutex_unlock(turnstiles_filas + hashIndex(clave));
-
     pthread_mutex_lock(mutexes_filas + hashIndex(clave));
         readers_filas[hashIndex(clave)] += 1;
         if (readers_filas[hashIndex(clave)] == 1) {
+            pthread_mutex_lock(turnstiles_filas + hashIndex(clave));
             pthread_mutex_lock(lock + hashIndex(clave));
         }
     pthread_mutex_unlock(mutexes_filas + hashIndex(clave));
@@ -138,6 +137,7 @@ unsigned int HashMapConcurrente::valor(std::string clave) {
     pthread_mutex_lock(mutexes_filas + hashIndex(clave));
         readers_filas[hashIndex(clave)] -= 1;
         if (readers_filas[hashIndex(clave)] == 0) {
+            pthread_mutex_unlock(turnstiles_filas + hashIndex(clave));
             pthread_mutex_unlock(lock + hashIndex(clave));
         }
     pthread_mutex_unlock(mutexes_filas + hashIndex(clave));
