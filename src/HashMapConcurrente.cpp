@@ -193,6 +193,7 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cantThreads) {
 
     max_args_t args = {
         table_index,
+        this->tabla,
         max,
         mutex_max,    
     };
@@ -210,14 +211,14 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cantThreads) {
     return args.max;
 }
 
-void* HashMapConcurrente::maximoThreads(void* args) {
+void* maximoThreads(void* args) {
     max_args_t max_args = *((max_args_t*) args);
     hashMapPair local_max = hashMapPair("", 0);
 
     unsigned int index;
     
     while ((index = max_args.table_index.fetch_add(1)) < HashMapConcurrente::cantLetras) {
-        ListaAtomica<hashMapPair>::Iterador it = tabla[index]->crearIt();
+        ListaAtomica<hashMapPair>::Iterador it = max_args.tabla[index]->crearIt();
 
         while (it.haySiguiente()) {
             if (it.siguiente().second > local_max.second) {

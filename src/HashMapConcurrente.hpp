@@ -23,7 +23,7 @@ public:
    hashMapPair maximoParalelo(unsigned int cantThreads);
 
 private:
-   ListaAtomica<hashMapPair> *tabla[HashMapConcurrente::cantLetras];
+   ListaAtomica<hashMapPair>* tabla[HashMapConcurrente::cantLetras];
 
    pthread_mutex_t lock[HashMapConcurrente::cantLetras];
 
@@ -36,14 +36,19 @@ private:
 
    static unsigned int hashIndex(std::string clave);
 
-   void* maximoThreads(void* args);
+   // void* maximoThreads(void* args) {
 
-   typedef struct s_max_args {
-      std::atomic<int> &table_index;
-      hashMapPair &max;
-      pthread_mutex_t &mutex_max;
-   } max_args_t;
-
+   // }
 };
+
+typedef struct s_max_args {
+   std::atomic<int> &table_index;
+   ListaAtomica<hashMapPair>** tabla;
+   hashMapPair &max;
+   pthread_mutex_t &mutex_max;
+   
+} max_args_t;
+
+void* maximoThreads(void* args);
 
 #endif  /* HMC_HPP */
