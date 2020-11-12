@@ -221,10 +221,13 @@ void* maximoThreads(void* args) {
         ListaAtomica<hashMapPair>::Iterador it = max_args.tabla[index]->crearIt();
 
         while (it.haySiguiente()) {
+           
             if (it.siguiente().second > local_max.second) {
                 local_max.first = it.siguiente().first;
                 local_max.second = it.siguiente().second;
             } 
+            it.avanzar();
+
         }
 
         pthread_mutex_lock(&max_args.mutex_max);

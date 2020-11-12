@@ -224,6 +224,8 @@ LT_BEGIN_TEST(TestsEjercicio4, CargarMultiplesArchivosFuncionaDosThreads)
     LT_CHECK_EQ(hM.claves().size(), 12);
 LT_END_TEST(CargarMultiplesArchivosFuncionaDosThreads)
 
+
+
 // Ejecutar tests
 LT_BEGIN_AUTO_TEST_ENV()
     AUTORUN_TESTS()

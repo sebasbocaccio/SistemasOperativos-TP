@@ -19,4 +19,11 @@ void cargarMultiplesArchivos(
     std::vector<std::string> filePaths
 );
 
+typedef struct s_cargar_args {
+   std::vector<std::string> filePaths; 
+   std::atomic<int> &file_index;
+   HashMapConcurrente &hm;
+   
+} cargar_args_t;
+
 #endif /* HMC_ARCHIVOS_HPP */
