@@ -36,33 +36,6 @@ int cargarArchivo(
     return cant;
 }
 
-/*
- unsigned int index;
-    
-    while ((index = max_args.table_index.fetch_add(1)) < HashMapConcurrente::cantLetras) {
-        ListaAtomica<hashMapPair>::Iterador it = max_args.tabla[index]->crearIt();
-
-        while (it.haySiguiente()) {
-           
-            if (it.siguiente().second > local_max.second) {
-                local_max.first = it.siguiente().first;
-                local_max.second = it.siguiente().second;
-            } 
-            it.avanzar();
-
-        }
-
-        pthread_mutex_lock(&max_args.mutex_max);
-            if (local_max.second > max_args.max.second) {
-                max_args.max = local_max;
-            }
-        pthread_mutex_unlock(&max_args.mutex_max);
-    }
-
-    return nullptr;
-}  
-
-*/
 
 void* cargarArchivosThread(void* args){
     cargar_args_t c_arg = *((cargar_args_t*) args); // Aca cargamos los argumentos .. 
