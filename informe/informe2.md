@@ -1,6 +1,6 @@
 Threading y concurrencia: hashmap
 
-# Introdución:
+# Introducción:
 Con los resultados del paper "Optimizing power using transformations” escrito en 1995. Sabemos para ejectuar alguna tarea, el uso de muchos cores sencillos pueden pueden tener un consumo menor (con respecto a la candidad de watts) a un super procesador. Utilizar muchos cores sencillos trae el desfio de sincronizar distintos threads o procesos.
 
 Para estudiar las desventajas y dificultades que trae la concurrencia implementaremos una estructura de datos con distintos metodos que tendran capacidad de ejecutarse en paralelo. 
@@ -114,7 +114,10 @@ Proponemos medir el tiempo de ejecución del método primero con una cantidad fi
 Al igual que en el experimento anterior, proponemos ciertas restricciones acerca de los parámetros que iremos modificando: La cantidad de threads no puede superar la cantidad de archivos a cargar. Esto por el simple motivo de que, por la implementación de nuestro mpetodo, esto no arrojaría ningpun resultado intersaante y solo ocuparían tiempod eprocesamiento innecesariamente.
 Muy similar al experimento anterior, esperamos que exista un punto de quiebre con respecto al tiempo de ejecución del método variando la cantidad de threads utilizados. En un aprimera instancia, esperamos que siempre sea beneficioso, pero cuando el _overhead_ de lanzar threads sea más significativo, este afectará el rendimiento del méotodo en general.
 
-# Resultados
+# Resultados y discusión
+## Maximo
+
+## CargarArchivos
 ![A](../Informe_datos/img/hm_tm_tl_tload.png)
 
 CPU donde se corrieron los experimentos:
@@ -150,33 +153,5 @@ Seteamos como cantidad máxima de threads para nuestros experimentos los siguien
 Conlcuímos que no tiene muhco sentido analizar los casos donde literalmento los threads no hacen nada.
 Lo interesante es ver cuando, supuestamente piodrían hacer algo estos threads, debido al scheduler, etc,
 terminan afectando negativamente la performance.
-
-# Hipótesis
-1. Más de 26 threads para `MaximoParalelo` no va a aportar mejoras significativas.
-2. Superar la cantidad de threads lógicos que soporta el procesador no va a generar una mejora tan significativa como si lo hace los primeros aumentos de threads. Tanto para `cargarArchivos` como `MaximoParalelo`.
-3. Para `CargarArchivos`, la cantidad de threads óptima va a ser la misma que la cantidad de archivos a cargar.
-4. Para `MaximoParalelo`, 13 threads. ¿Por qué? Porque el cambio de contexto es muy caro. Y el dolar blue subió, y está muy caro.
-5. La cantidad de threads de los dos procesos no se afectan entre sí, porque suceden uno despues de otro.
-
-## Experimento 4: Cantidad de archvios fija
-Variamos cant threads máximo y cant threads cargar. Heatmap
-
-## Expermiento 1: MaximoParalelo con 1 archivo
-- Steps de 1 thread graficando #threads vs tiempo de ejecucion.
-
-## Experimento 2: Cargar 8 archivos
-- Steps de 1 thread graficando #threads vs tiempo de ejecución.
-
-[cantThreads][cantFiles][cantThreadsMax][TIEMPO_MAX][TIEMPO_LEER]
-    1            10             1           10          12.3
-
-## Experimento 3: Variando cantidad de archivos
-3d: cantidad archivos X cantidad threads --> tiempo de ejecucion
-(tal vez no coincida con experimento 2)
-
-## Análisis de resultados:
-- Chequear distribución de resultados de función de hash. (Hisotgrama primera letra de las palabras)
-
-# Resultados
 
 # Conclusión
