@@ -61,3 +61,7 @@ En el caso del método `Valor`, la race condition se da por índice de tabla. Po
     Supongamos una lista donde hay únicamente un elemento cuyo valor es 1. Como es el primer elemento que considera, este toma el rol de máximo en la lista. Antes de considerar al próximo elemento, se ejecutan y finalizan 4 llamados al método `Incrementar`: Dos para el primero, llevando su valor a 3, y dos para un nuevo elemento, llevand su valor a 2. Notemos que en ningún momento este nuevo elemento fue el máximo de la lista, pero como no se vuelve a considerar el nodo ya visitado, el máximo pasa a ser este nuevo nodo. Máximo en este caso devolvería el nuevo nodo con su valor: 2.
 
     Como máximo es así mismo una operación de lectura, la lógica de sincronizaciṕon es exáctamente igual a la utilzada en el método `Claves`.
+
+## CargarArchivos
+- No fue necesario tomar ningún recaudo desde el punto de vista de sincronización ya que, el método `cargarArchivos` simplemente llamaba al método `Incrementar` del HashMap, y este ya se encarga de eso.
+- Decidimos pasar como parámetro a los threads un int atómico que haga referencia al índice del último archivo que fue llamado a procesar. De esta manera, guardando este índice, un mismo thread ciclaba hasta que este índice indicase que todos los archivos fueron procesados. De esta manera, solo hace falta crear la cantidad de threads requerida, una sola vez. Así mísmo, pasamos los nombres de los archivos en un vector. Como los threads solo hacen lecturas sobre este vector, no es necesario regularlos con un mutex.
