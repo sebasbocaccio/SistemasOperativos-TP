@@ -1,0 +1,31 @@
+reader
+======
+
+turnstil2[i].wait()
+turnstilee2[i].signal()
+
+mutex_readers[i].wait()
+    readers[i] += 1
+    if readers[i] == 1:
+        lock[i].wait()
+mutex_readers[i].signal()
+
+Seccion critica de valor[i]
+
+mutex_readers[i].wait()
+    readers[i] -= 1;
+    if readers[i] == 0:
+        lock[i].signal()
+mutex_readers[i].signal()
+
+
+writer
+======
+turnstil2[i].wait()
+lock[i].wait()
+
+// seccion critica
+turnstil2[i].signal()
+
+
+lock[i].signal()

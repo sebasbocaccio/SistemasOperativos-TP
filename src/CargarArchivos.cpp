@@ -71,8 +71,6 @@ void cargarMultiplesArchivos(
     for (unsigned int i = 0; i < cantThreads; ++i) {
         pthread_join(tid[i], NULL);
     }
-
-
 }
 
 

@@ -1,0 +1,80 @@
+
+mutex_readers = Semaphore(1)
+mutex_writers = Semaphore(1)
+roomEmpty = Semaphore(1)
+turnstile = Sempahore(1)
+
+
+readers = 0;
+writers = 0;
+
+readers
+=======
+
+turnstile.wait()
+turnstile.signal()
+
+mutex_readers.wait()
+    readers += 1
+    if readers == 1:
+        roomEmpty.wait()
+mutex_readers.signal()
+
+# Critical section
+
+mutex_readers.wait()
+    readers -= 1
+    if readers == 0:
+        roomEmpty.signal()
+mutex_readers.signal()
+
+writers
+=======
+
+mutex_writers.wait()
+    writers += 1
+    if writers == 1:
+        turnstile.wait()
+        roomEmpty.wait()
+mutex_writers.signal()
+
+# Critical section
+
+mutex_writers.wait()
+    writers -= 1
+    if writers == 0:
+        roomEmpty.signal()
+        turnstile.signal()
+mutex_writers.signal()
+
+
+reader 2
+========
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

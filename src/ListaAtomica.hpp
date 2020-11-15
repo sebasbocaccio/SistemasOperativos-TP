@@ -30,18 +30,11 @@ class ListaAtomica {
     }
 
     void insertar(const T &valor) {
-        // Completar (Ejercicio 1)
-
         Nodo* new_first = new Nodo(valor);
         pthread_mutex_lock(&lock);
         new_first->_siguiente = _cabeza.load();
         _cabeza.store(new_first);  
-        pthread_mutex_unlock(&lock);
-        // tempp <- cabeza
-        //cabeza <- nuevo nodo
-        //cabeza.siguiente <- temp
-                
-        
+        pthread_mutex_unlock(&lock);        
     }
 
     // Puede ser que cabeza no sea atomico??
