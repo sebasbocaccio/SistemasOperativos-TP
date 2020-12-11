@@ -1,7 +1,6 @@
 #ifndef LISTA_ATOMICA_HPP
 #define LISTA_ATOMICA_HPP
 
-#include<pthread.h>
 #include <atomic>
 
 template<typename T>
@@ -13,7 +12,6 @@ class ListaAtomica {
         T _valor;
         Nodo *_siguiente;
     };
-    pthread_mutex_t lock;
     std::atomic<Nodo *> _cabeza;
 
  public:
@@ -30,11 +28,10 @@ class ListaAtomica {
     }
 
     void insertar(const T &valor) {
-        Nodo* new_first = new Nodo(valor);
-        pthread_mutex_lock(&lock);
-        new_first->_siguiente = _cabeza.load();
-        _cabeza.store(new_first);  
-        pthread_mutex_unlock(&lock);        
+        Nodo* new_node = new Nodo(valor);
+        new_node->_siguiente = _cabeza.load();
+        
+        while(!_cabeza.compare_exchange_weak(new_node->_siguiente, new_node));
     }
 
     // Puede ser que cabeza no sea atomico??
