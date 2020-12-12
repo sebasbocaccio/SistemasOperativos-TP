@@ -1,0 +1,2 @@
+# Ignoramos los checkpoints de jupyter-notebook
+etc/.ipynb_checkpoints
